@@ -36,6 +36,7 @@ public class Main {
 		
 		UpdateSHStock updateSHStock = new UpdateSHStock();
 		updateSHStock.update();
+
 	}
 	
 	public static String convert(String utfString){
