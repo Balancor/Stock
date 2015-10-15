@@ -7,13 +7,17 @@ import java.net.Socket;
 
 import com.haiming.utils.Log;
 
-public class HttpClient {
+public class HttpClient implements OnRequestChangedListener {
 
 	private static final int DEFAULT_PORT = 80;
 	private Socket mSocket = null;
 	private HttpRequest mRequest;
 
 	public HttpClient(HttpRequest request) {
+		init(request);
+	}
+	
+	private void init(HttpRequest request){
 		mRequest = request;
 
 		try {
@@ -22,6 +26,7 @@ public class HttpClient {
 			e.printStackTrace();
 		}
 	}
+	
 
 	public HttpResponse execute() {
 		HttpResponse response = null;
@@ -62,6 +67,14 @@ public class HttpClient {
 		}
 
 		return response;
+	}
+
+
+
+	@Override
+	public void onRequestChangedListner() {
+		
+		
 	}
 
 }

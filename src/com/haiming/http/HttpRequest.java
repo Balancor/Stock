@@ -59,6 +59,8 @@ public class HttpRequest {
 	private String mHost = "";
 	private String mMethod = "";
 	private HashMap<String, String> mHeaders = new HashMap<>();
+	
+	private OnRequestChangedListener mRequestChangedCallback = null;
 
 	public HttpRequest(String method, String url) {
 		this.mMethod = method.toUpperCase().trim();
@@ -126,4 +128,13 @@ public class HttpRequest {
 	public byte[] toBytes(){
 		return getRequest().getBytes();
 	}
+	
+	public void setonRequestChangedListner(OnRequestChangedListener callback){
+		mRequestChangedCallback = callback;
+	}
+	public void updateRequest(){
+		if(mRequestChangedCallback != null){
+			mRequestChangedCallback.onRequestChangedListner();
+		}
+	};
 }
