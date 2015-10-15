@@ -13,7 +13,7 @@ public class Ajax {
 	}
 	public void doPost(String url, String httpArgs){
 		service(url, httpArgs, "POST");
-		
+
 	}
 	
 	private String service(String httpUrl, String httpArg, String method) {

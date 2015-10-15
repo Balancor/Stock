@@ -15,6 +15,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.haiming.http.HttpClient;
+import com.haiming.http.HttpRequest;
+import com.haiming.http.HttpResponse;
+import com.haiming.utils.Log;
+
 public class Main {
 	private static final String baseURL = "http://apis.baidu.com/apistore/stockservice/stock";
 	private static String mBaiduHttpArgs = "stockid=sz002230&list=1";
@@ -26,18 +31,12 @@ public class Main {
 	private static StockFrame mStockFrame;
 	
 	private static JSONObject mJsonObject;
-	public static void main(String[] args) {
+	/*http://query.sse.com.cn/commonQuery.do?jsonCallBack=jsonp1444815995243&_=1444815995274&isPagination=false&sqlId=COMMON_SSE_ZQPZ_GP_GPLB_C&productid=600000
 
-		String httpArg = "stockid=sz002230&list=1";
-		//String jsonResult = request(baseURL, mBaiduHttpArgs);
-		//mStockFrame = new StockFrame(jsonResult);
-		//String name = mStockFrame.getStockName();
-		//System.out.println("Name: " + jsonResult);
-		
-		UpdateSHStock updateSHStock = new UpdateSHStock();
-		updateSHStock.update();
+	 * */
+	private static final String SSE_COMPANY_URL = "http://query.sse.com.cn/commonQuery.do";
+	private static String sseCompanyHttpArgs = "isPagination=false&sqlId=COMMON_SSE_ZQPZ_GP_GPLB_C&productid=600000";
 
-	}
 	
 	public static String convert(String utfString){
 		StringBuilder sb = new StringBuilder();
@@ -66,7 +65,7 @@ public class Main {
 	                .openConnection();
 	        connection.setRequestMethod("GET");
 	        
-	        connection.setRequestProperty("apikey",  myApiKey);
+	        //connection.setRequestProperty("apikey",  myApiKey);
 	        connection.connect();
 	        InputStream is = connection.getInputStream();
 	        reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
@@ -112,9 +111,26 @@ public class Main {
 				}
 			}
 		}
-		
-		
+	}
 	
+	public static void main(String[] args) {
+
+//		String httpArg = "stockid=sz002230&list=1";
+//		String jsonResult = request(SSE_COMPANY_URL, sseCompanyHttpArgs);
+//		mStockFrame = new StockFrame(jsonResult);
+//		String name = mStockFrame.getStockName();
+//		System.out.println("Name: " + jsonResult);
+//		UpdateSHStock updateSHStock = new UpdateSHStock();
+//		updateSHStock.update();
+		String url = "www.baidu.com/index.html";
+		String method = "GET";
+		HttpRequest request = new HttpRequest(method, url);
+		HttpResponse response = null;
+		HttpClient client = new HttpClient(request);
 		
+		response = client.execute();
+		
+//		Log.d("Response: \n"+response.dumpHeaders());
+
 	}
 }
