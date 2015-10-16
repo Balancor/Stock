@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONString;
 
+import com.haiming.http.DefaultHttpRequest;
 import com.haiming.http.HttpClient;
 import com.haiming.http.HttpRequest;
 import com.haiming.http.HttpResponse;
@@ -122,15 +123,18 @@ public class Main {
 //		System.out.println("Name: " + jsonResult);
 //		UpdateSHStock updateSHStock = new UpdateSHStock();
 //		updateSHStock.update();
-		String url = "www.baidu.com/index.html";
+		String host = "query.sse.com.cn";
+		String url = "/commonQuery.do?jsonCallBack=jsonp1445003840821&_=1445003840848&isPagination=false&sqlId=COMMON_SSE_ZQPZ_GP_GPLB_C&productid=600000";
 		String method = "GET";
-		HttpRequest request = new HttpRequest(method, url);
+		HttpRequest request = new DefaultHttpRequest(method,host, url);
+		request.setHeader(HttpRequest.REQUEST_HEADER_HOST, "query.sse.com.cn");
+		request.setHeader(HttpRequest.REQUEST_HEADER_REFERER, "http://www.sse.com.cn/assortment/stock/list/stockdetails/company/index.shtml?COMPANY_CODE=600000");
 		HttpResponse response = null;
 		HttpClient client = new HttpClient(request);
 		
 		response = client.execute();
 		
-//		Log.d("Response: \n"+response.dumpHeaders());
+		Log.d("Response: \n"+response.dumpHeaders());
 
 	}
 }

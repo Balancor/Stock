@@ -37,6 +37,7 @@ public class HttpClient implements OnRequestChangedListener {
 				sendStream = mSocket.getOutputStream();
 				receiveStream = mSocket.getInputStream();
 				sendStream.write(mRequest.toBytes());
+				Log.d("Request: "+mRequest.getRequest());
 				sendStream.flush();
 //				Thread.sleep(2000);
 				int size = 0;
@@ -73,8 +74,7 @@ public class HttpClient implements OnRequestChangedListener {
 
 	@Override
 	public void onRequestChangedListner() {
-		
-		
+
 	}
 
 }

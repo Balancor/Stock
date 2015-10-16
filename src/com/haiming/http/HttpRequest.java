@@ -6,33 +6,34 @@ import com.haiming.utils.Log;
 
 public class HttpRequest {
 
-    private static final String REQUEST_HEADER_ACCEPT            = "Accept";
-    private static final String REQUEST_HEADER_ACCEPT_CHARSET    = "Accept-Charset";
-    private static final String REQUEST_HEADER_ACCEPT_ENCODING   = "Accept-Encoding";
-    private static final String REQUEST_HEADER_ACCEPT_LANGUAGE   = "Accept-Language";
-    private static final String REQUEST_HEADER_AUTHORIZATION     = "Authorization";
-    private static final String REQUEST_HEADER_CONNECTION        = "Connection";
-    private static final String REQUEST_HEADER_CONTENT_LENGTH    = "Content-Length";
-    private static final String REQUEST_HEADER_COOKIE            = "Cookie";
-    private static final String REQUEST_HEADER_FROM              = "From";
-    private static final String REQUEST_HEADER_HOST              = "Host";
-    private static final String REQUEST_HEADER_IF_MODIFIED_SINCE = "If-Modified-Since";
-    private static final String REQUEST_HEADER_PRAGMA            = "Pragma";
-    private static final String REQUEST_HEADER_REFERER           = "Referer";
-    private static final String REQUEST_HEADER_USER_AGENT        = "User-Agent";
-    private static final String REQUEST_HEADER_UA_PIXELS         = "UA-Pixels";
-    private static final String REQUEST_HEADER_UA_COLOR          = "UA-Color";
-    private static final String REQUEST_HEADER_UA_OS             = "UA-OS";
-    private static final String REQUEST_HEADER_UA_CPU            = "UA-CPU";
+    public static final String REQUEST_HEADER_ACCEPT            = "Accept";
+    public static final String REQUEST_HEADER_ACCEPT_CHARSET    = "Accept-Charset";
+    public static final String REQUEST_HEADER_ACCEPT_ENCODING   = "Accept-Encoding";
+    public static final String REQUEST_HEADER_ACCEPT_LANGUAGE   = "Accept-Language";
+    public static final String REQUEST_HEADER_AUTHORIZATION     = "Authorization";
+    public static final String REQUEST_HEADER_CONNECTION        = "Connection";
+    public static final String REQUEST_HEADER_CONTENT_LENGTH    = "Content-Length";
+    public static final String REQUEST_HEADER_COOKIE            = "Cookie";
+    public static final String REQUEST_HEADER_FROM              = "From";
+    public static final String REQUEST_HEADER_HOST              = "Host";
+    public static final String REQUEST_HEADER_IF_MODIFIED_SINCE = "If-Modified-Since";
+    public static final String REQUEST_HEADER_PRAGMA            = "Pragma";
+    public static final String REQUEST_HEADER_REFERER           = "Referer";
+    public static final String REQUEST_HEADER_USER_AGENT        = "User-Agent";
+    public static final String REQUEST_HEADER_UA_PIXELS         = "UA-Pixels";
+    public static final String REQUEST_HEADER_UA_COLOR          = "UA-Color";
+    public static final String REQUEST_HEADER_UA_OS             = "UA-OS";
+    public static final String REQUEST_HEADER_UA_CPU            = "UA-CPU";
+    public static final String REQUEST_HEADER_CACHE_CONTROL     = "Cache-Control";
 
-    private static final String REQUEST_GET     = "GET";
-    private static final String REQUEST_POST    = "POST";
-    private static final String REQUEST_HEAD    = "HEAD";
-    private static final String REQUEST_PUT     = "PUT";
-    private static final String REQUEST_DELETE  = "DELETE";
-    private static final String REQUEST_OPTIONS = "OPTIONS";
-    private static final String REQUEST_TRACE   = "TRACE";
-    private static final String REQUEST_CONNECT = "CONNECT";
+    public static final String REQUEST_GET     = "GET";
+    public static final String REQUEST_POST    = "POST";
+    public static final String REQUEST_HEAD    = "HEAD";
+    public static final String REQUEST_PUT     = "PUT";
+    public static final String REQUEST_DELETE  = "DELETE";
+    public static final String REQUEST_OPTIONS = "OPTIONS";
+    public static final String REQUEST_TRACE   = "TRACE";
+    public static final String REQUEST_CONNECT = "CONNECT";
 
     private static final String[] AvailableHeaders = {
        REQUEST_HEADER_ACCEPT            ,// "Accept";
@@ -52,7 +53,8 @@ public class HttpRequest {
        REQUEST_HEADER_UA_PIXELS         ,// "UA-Pixels";
        REQUEST_HEADER_UA_COLOR          ,// "UA-Color";
        REQUEST_HEADER_UA_OS             ,// "UA-OS";
-       REQUEST_HEADER_UA_CPU            // "UA-CPU";
+       REQUEST_HEADER_UA_CPU            ,// "UA-CPU";
+       REQUEST_HEADER_CACHE_CONTROL
     };
 
 	private String mURL = "";
@@ -62,10 +64,14 @@ public class HttpRequest {
 	
 	private OnRequestChangedListener mRequestChangedCallback = null;
 
-	public HttpRequest(String method, String url) {
+	public HttpRequest(String method,String host, String url) {
 		this.mMethod = method.toUpperCase().trim();
 		this.mURL = url.trim();
-		this.mHost = mURL.substring(mURL.indexOf("//") +2 , mURL.indexOf("/"));
+		this.mHost = host.trim();
+	}
+	
+	public HttpRequest (String method, String host) {
+		this(method, host, "/");
 	}
 	
 	public void setHeader(String header, String content){
@@ -77,7 +83,7 @@ public class HttpRequest {
 			}
 		}
 		if(!isAvailableHeader){
-			Log.d(header + "is not avalidable");
+			Log.d(header + " is not avalidable");
 			return;
 		}
 		
@@ -117,7 +123,7 @@ public class HttpRequest {
 	
 	public String getRequest(){
 		StringBuffer sb = new StringBuffer();
-		sb.append(this.mMethod+" /"+this.mURL+" HTTP/1.1\r\n");
+		sb.append(this.mMethod+" "+this.mURL+" HTTP/1.1\r\n");
 		for(String key : mHeaders.keySet()){
 			sb.append(key+":"+mHeaders.get(key)+"\r\n");
 		}
