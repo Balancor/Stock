@@ -1,29 +1,30 @@
 package com.haiming.http;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 import com.haiming.utils.Log;
 
 public class HttpResponse {
-	private static final String RESPONSE_HEADER_ALLOW            = "Allow";
-    private static final String RESPONSE_HEADER_DATE             = "Date";
-    private static final String RESPONSE_HEADER_EXPIRES          = "Expires";
-    private static final String RESPONSE_HEADER_P3P              = "P3P";
-    private static final String RESPONSE_HEADER_SET_COOKIE       = "Set-Cookie";
-    private static final String RESPONSE_HEADER_ETAG             = "ETag";
-    private static final String RESPONSE_HEADER_LAST_MODIFIED    = "Last-Modified";
-    private static final String RESPONSE_HEADER_CONTENT_TYPE     = "Content-Type";
-    private static final String RESPONSE_HEADER_CONTENT_RANGE    = "Content-Range";
-    private static final String RESPONSE_HEADER_CONTENT_LENGTH   = "Content-Length";
-    private static final String RESPONSE_HEADER_CONTENT_ENCODING = "Content-Encoding";
-    private static final String RESPONSE_HEADER_CONTENT_LANGUAGE = "Content-Language";
-    private static final String RESPONSE_HEADER_SERVER           = "Server";
-    private static final String RESPONSE_HEADER_X_ASPNET_VERSION = "X-AspNet-Version";
-    private static final String RESPONSE_HEADER_X_POWERED_BY     = "X-Powered-By";
-    private static final String RESPONSE_HEADER_CONNECTION       = "Connection";
-    private static final String RESPONSE_HEADER_LOCATION         = "Location";
-    private static final String RESPONSE_HEADER_REFRESH          = "Refresh";
-    private static final String RESPONSE_HEADER_WWW_AUTHENTICATE = "WWW-Authenticate";
+	public static final String RESPONSE_HEADER_ALLOW            = "Allow";
+    public static final String RESPONSE_HEADER_DATE             = "Date";
+    public static final String RESPONSE_HEADER_EXPIRES          = "Expires";
+    public static final String RESPONSE_HEADER_P3P              = "P3P";
+    public static final String RESPONSE_HEADER_SET_COOKIE       = "Set-Cookie";
+    public static final String RESPONSE_HEADER_ETAG             = "ETag";
+    public static final String RESPONSE_HEADER_LAST_MODIFIED    = "Last-Modified";
+    public static final String RESPONSE_HEADER_CONTENT_TYPE     = "Content-Type";
+    public static final String RESPONSE_HEADER_CONTENT_RANGE    = "Content-Range";
+    public static final String RESPONSE_HEADER_CONTENT_LENGTH   = "Content-Length";
+    public static final String RESPONSE_HEADER_CONTENT_ENCODING = "Content-Encoding";
+    public static final String RESPONSE_HEADER_CONTENT_LANGUAGE = "Content-Language";
+    public static final String RESPONSE_HEADER_SERVER           = "Server";
+    public static final String RESPONSE_HEADER_X_ASPNET_VERSION = "X-AspNet-Version";
+    public static final String RESPONSE_HEADER_X_POWERED_BY     = "X-Powered-By";
+    public static final String RESPONSE_HEADER_CONNECTION       = "Connection";
+    public static final String RESPONSE_HEADER_LOCATION         = "Location";
+    public static final String RESPONSE_HEADER_REFRESH          = "Refresh";
+    public static final String RESPONSE_HEADER_WWW_AUTHENTICATE = "WWW-Authenticate";
 
     private static final String[] mAvaliableResponseHeaders = {
             RESPONSE_HEADER_ALLOW            ,// "Allow";
@@ -70,13 +71,38 @@ public class HttpResponse {
 		mStatueMsg = parts[2];
 		initResponseHeaders();
 
-	//	initResponseBody();
+		initResponseBody();
+	}
+	private String getContentType(byte[] buffer){
+		String tempResponse = new String(buffer);
+		int contentTypeCharasetIndex = tempResponse.indexOf("charset");
+		int contentTypeCharasetMaxEnd = contentTypeCharasetIndex 
+							+ 8/*length of charset=*/ 
+							+ 7/* max length of charsets*/;
+		String contentyTypeCharset = tempResponse.substring(contentTypeCharasetIndex,
+						contentTypeCharasetMaxEnd);
+		String[] parts = new String[2];
+		if (contentyTypeCharset.contains(" ")) {
+			parts = contentyTypeCharset.split(" ");
+		} else if (contentyTypeCharset.contains(";")) {
+			parts = contentyTypeCharset.split(";");
+		} else if (contentyTypeCharset.contains(",")){
+			parts = contentyTypeCharset.split(",");
+		} else if(contentyTypeCharset.contains("\r")){
+			parts = contentyTypeCharset.split("\r");
+		} else if (contentyTypeCharset.contains("\r\n")){
+			parts = contentyTypeCharset.split("\r\n");
+		}
+		if(parts[0].length() > 0)
+			contentyTypeCharset = parts[0];
+		
+		return contentyTypeCharset.split("=")[1];
 	}
 	
 	private void initResponseHeaders(){
 		if(mResponseHeader.length() == 0)return;
 		String[] parts = new String[2];
-		Log.d("mResponseHeader length: "+mResponseHeader.length());
+//		Log.d("mResponseHeader length: "+mResponseHeader.length());
 		for(String header : mAvaliableResponseHeaders){
 			if(!mResponseHeader.contains(header))continue;
 			int headerLocation = mResponseHeader.indexOf(header);
@@ -89,13 +115,22 @@ public class HttpResponse {
 		}
 	}
 	private void initResponseBody(){
-		int bodyLength = Integer.parseInt(mResponseHeaders.get(RESPONSE_HEADER_CONTENT_LENGTH));
+		int bodyLength = Integer.parseInt(mResponseHeaders.get(RESPONSE_HEADER_CONTENT_LENGTH).trim());
 		if(bodyLength <= 0)return;
 		mResponseBody = new byte[bodyLength];
 		String bodyContent = mResponseString.substring(mResponseString.indexOf("\r\n\r\n"), mResponseString.length());
-		
-		mResponseBody = bodyContent.substring(0, bodyLength).getBytes();
+
+		mResponseBody = bodyContent.getBytes();
+//		Log.d("mResponseBody: "+ new String(mResponseBody));
 	}
+	
+	public byte[] getResponseBody(){
+		if(mResponseBody == null){
+			initResponseBody();
+		}
+		return mResponseBody;
+	}
+	
 	
 	public String getHeader(String header){
 		String result = null;

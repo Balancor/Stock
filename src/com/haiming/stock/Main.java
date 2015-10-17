@@ -123,8 +123,9 @@ public class Main {
 //		System.out.println("Name: " + jsonResult);
 //		UpdateSHStock updateSHStock = new UpdateSHStock();
 //		updateSHStock.update();
+		//jsonCallBack=jsonp1445003840821&_=1445003840848&isPagination=false&
 		String host = "query.sse.com.cn";
-		String url = "/commonQuery.do?jsonCallBack=jsonp1445003840821&_=1445003840848&isPagination=false&sqlId=COMMON_SSE_ZQPZ_GP_GPLB_C&productid=600000";
+		String url = "/commonQuery.do?sqlId=COMMON_SSE_ZQPZ_GP_GPLB_C&productid=600000";
 		String method = "GET";
 		HttpRequest request = new DefaultHttpRequest(method,host, url);
 		request.setHeader(HttpRequest.REQUEST_HEADER_HOST, "query.sse.com.cn");
@@ -133,8 +134,17 @@ public class Main {
 		HttpClient client = new HttpClient(request);
 		
 		response = client.execute();
+		JSONObject jsonObject = null;
+		if(response.getHeader(HttpResponse.RESPONSE_HEADER_CONTENT_TYPE).contains("json")){
+			jsonObject= new JSONObject( new String(response.getResponseBody()));
+		}
+//		if(jsonObject != null){
+//			JSONArray companyInfo = jsonObject.getJSONArray("result");
+//			Log.d("Json result: "+companyInfo);
+//		}
+//		
 		
-		Log.d("Response: \n"+response.dumpHeaders());
+//		Log.d("Response: \n"+response.dumpHeaders());
 
 	}
 }
