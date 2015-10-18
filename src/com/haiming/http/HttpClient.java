@@ -53,6 +53,7 @@ public class HttpClient implements OnRequestChangedListener {
 				// Log.d("Request: "+mRequest.getRequest());
 				sendStream.flush();
 				// Thread.sleep(2000);
+				
 				int size = 0;
 				byte[] buffer = null;
 				while ((size = receiveStream.available()) <= 0) {
@@ -61,11 +62,39 @@ public class HttpClient implements OnRequestChangedListener {
 
 				Log.d("Size: " + size);
 				buffer = new byte[size];
-				while (receiveStream.read(buffer) != -1) {
+				int headerEndIndex = 0;
+				int responseLength = 0;
+				int readIndex = 0;
+				int ret = 0;
+
+				do{
+					ret = receiveStream.read(buffer);
+					readIndex += ret;
+					content.append(new String(buffer));
+					headerEndIndex = content.toString().indexOf("\r\n\r\n");
+					if(headerEndIndex > 0)
+						break;
+				}while(headerEndIndex <= 0);
+
+				String header = content.toString().substring(0, headerEndIndex + 4);
+				response = new HttpResponse(header.getBytes());
+				responseLength  = (header.length() + Integer.parseInt(response.getHeader(HttpResponse.RESPONSE_HEADER_CONTENT_LENGTH)));
+				
+				buffer = null;
+				buffer = new byte[1024];
+				while(readIndex < responseLength ){
+					size = receiveStream.available();
+					if(size < 1024){
+						buffer = null;
+						buffer = new byte[1024];
+						ret = receiveStream.read(buffer, readIndex, responseLength - readIndex);
+					} else {
+						ret = receiveStream.read(buffer, readIndex, 1024);
+					}
 					content.append(new String(buffer));
 				}
 
-				Log.d(new String(content.toString()));
+//				Log.d(new String(content.toString()));
 
 				response = new HttpResponse(content.toString().getBytes());
 

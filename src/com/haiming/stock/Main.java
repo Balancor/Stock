@@ -8,10 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONString;
 
@@ -136,15 +138,18 @@ public class Main {
 		response = client.execute();
 		JSONObject jsonObject = null;
 		if(response.getHeader(HttpResponse.RESPONSE_HEADER_CONTENT_TYPE).contains("json")){
-			jsonObject= new JSONObject( new String(response.getResponseBody()));
+			try {
+				jsonObject= new JSONObject( new String(response.getResponseBody(), response.getMessageBodyCharset()));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 		}
-//		if(jsonObject != null){
-//			JSONArray companyInfo = jsonObject.getJSONArray("result");
-//			Log.d("Json result: "+companyInfo);
-//		}
-//		
+		if(jsonObject != null){
+			JSONArray companyInfo = jsonObject.getJSONArray("result");
+			Log.d("Json result: "+companyInfo);
+		}
 		
-//		Log.d("Response: \n"+response.dumpHeaders());
-
 	}
 }

@@ -62,7 +62,9 @@ public class HttpResponse {
 	private byte[] mResponseBody;
 	
 	public HttpResponse(byte[] buffer) {
+
 		mResponseString.append(new String(buffer));
+
 		mResponseHeader = mResponseString.substring(0, mResponseString.indexOf("\r\n\r\n")+4);
 		String firstLine = mResponseHeader.substring(0, mResponseString.indexOf("\r\n"));
 		String[] parts = firstLine.split(" ");
@@ -71,38 +73,33 @@ public class HttpResponse {
 		mStatueMsg = parts[2];
 		initResponseHeaders();
 
-		initResponseBody();
+//		initResponseBody();
 	}
-	private String getContentType(byte[] buffer){
-		String tempResponse = new String(buffer);
-		int contentTypeCharasetIndex = tempResponse.indexOf("charset");
-		int contentTypeCharasetMaxEnd = contentTypeCharasetIndex 
-							+ 8/*length of charset=*/ 
-							+ 7/* max length of charsets*/;
-		String contentyTypeCharset = tempResponse.substring(contentTypeCharasetIndex,
-						contentTypeCharasetMaxEnd);
-		String[] parts = new String[2];
-		if (contentyTypeCharset.contains(" ")) {
-			parts = contentyTypeCharset.split(" ");
-		} else if (contentyTypeCharset.contains(";")) {
-			parts = contentyTypeCharset.split(";");
-		} else if (contentyTypeCharset.contains(",")){
-			parts = contentyTypeCharset.split(",");
-		} else if(contentyTypeCharset.contains("\r")){
-			parts = contentyTypeCharset.split("\r");
-		} else if (contentyTypeCharset.contains("\r\n")){
-			parts = contentyTypeCharset.split("\r\n");
+	public String getMessageBodyCharset(){
+		String tempResponse = getHeader(RESPONSE_HEADER_CONTENT_TYPE).trim();
+		String[] parts = null;
+		String contentyTypeCharset = "";
+		if(tempResponse.contains(";")){
+			parts = tempResponse.split(";");
 		}
-		if(parts[0].length() > 0)
-			contentyTypeCharset = parts[0];
-		
-		return contentyTypeCharset.split("=")[1];
+		if (parts != null) {
+			for (int i = 0; i < parts.length; i++) {
+				if (parts[i].indexOf("charset") != -1) {
+					contentyTypeCharset = parts[i];
+				}
+			}
+		}
+		String type = "utf-8";
+		if(contentyTypeCharset.length() > 0){
+			type = contentyTypeCharset.split("=")[1];
+		}
+		return type;
 	}
 	
 	private void initResponseHeaders(){
 		if(mResponseHeader.length() == 0)return;
 		String[] parts = new String[2];
-//		Log.d("mResponseHeader length: "+mResponseHeader.length());
+
 		for(String header : mAvaliableResponseHeaders){
 			if(!mResponseHeader.contains(header))continue;
 			int headerLocation = mResponseHeader.indexOf(header);
@@ -118,10 +115,19 @@ public class HttpResponse {
 		int bodyLength = Integer.parseInt(mResponseHeaders.get(RESPONSE_HEADER_CONTENT_LENGTH).trim());
 		if(bodyLength <= 0)return;
 		mResponseBody = new byte[bodyLength];
-		String bodyContent = mResponseString.substring(mResponseString.indexOf("\r\n\r\n"), mResponseString.length());
+		String bodyContent = "";
+
+		bodyContent = mResponseString.substring(mResponseString.indexOf("\r\n\r\n"), mResponseString.length());
+					
+
 
 		mResponseBody = bodyContent.getBytes();
-//		Log.d("mResponseBody: "+ new String(mResponseBody));
+		try {
+			Log.d("mResponseBody: "+ new String(mResponseBody, getMessageBodyCharset()));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public byte[] getResponseBody(){
@@ -144,7 +150,7 @@ public class HttpResponse {
 		if(isAvaliableHeader){
 			result = mResponseHeaders.get(header);
 		}
-		return result;
+		return result.trim();
 	}
 	
 	public String dumpHeaders(){
