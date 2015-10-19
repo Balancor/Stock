@@ -50,9 +50,8 @@ public class HttpClient implements OnRequestChangedListener {
 				receiveStream = mSocket.getInputStream();
 				sendStream.write(mRequest.toBytes());
 
-				// Log.d("Request: "+mRequest.getRequest());
 				sendStream.flush();
-				// Thread.sleep(2000);
+
 				
 				int size = 0;
 				byte[] buffer = null;
@@ -60,7 +59,6 @@ public class HttpClient implements OnRequestChangedListener {
 					continue;
 				}
 
-				Log.d("Size: " + size);
 				buffer = new byte[size];
 				int headerEndIndex = 0;
 				int responseLength = 0;
@@ -84,20 +82,20 @@ public class HttpClient implements OnRequestChangedListener {
 				buffer = new byte[1024];
 				while(readIndex < responseLength ){
 					size = receiveStream.available();
+					if(size == 0)continue;
 					if(size < 1024){
 						buffer = null;
-						buffer = new byte[1024];
-						ret = receiveStream.read(buffer, readIndex, responseLength - readIndex);
+						buffer = new byte[size];
+						ret = receiveStream.read(buffer, 0, size);
 					} else {
-						ret = receiveStream.read(buffer, readIndex, 1024);
+						ret = receiveStream.read(buffer, 0, 1024);
 					}
+					readIndex += ret;
 					content.append(new String(buffer));
 				}
 
-//				Log.d(new String(content.toString()));
-
+				response = null;
 				response = new HttpResponse(content.toString().getBytes());
-
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -107,12 +105,9 @@ public class HttpClient implements OnRequestChangedListener {
 				sendStream.close();
 				mSocket.close();
 			} catch (IOException e) {
-
 				e.printStackTrace();
 			}
-
 		}
-
 		return response;
 	}
 
