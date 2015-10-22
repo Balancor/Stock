@@ -40,7 +40,15 @@ public class Main {
 	private static final String SSE_COMPANY_URL = "http://query.sse.com.cn/commonQuery.do";
 	private static String sseCompanyHttpArgs = "isPagination=false&sqlId=COMMON_SSE_ZQPZ_GP_GPLB_C&productid=600000";
 
-	
+	/*
+http://query.sse.com.cn/commonQuery.do?jsonCallBack=jsonp1445504697722&_=1445504697858&isPagination=false&sqlId=COMMON_SSE_ZQPZ_GP_GPLB_C&productid=600004
+
+http://query.sse.com.cn/commonQuery.do?jsonCallBack=jsonp1445504697724&_=1445504697861&isPagination=false&sqlId=COMMON_SSE_ZQPZ_GP_GPLB_AGSSR_C&productid=600004
+
+
+http://query.sse.com.cn/commonQuery.do?jsonCallBack=jsonp1445504697725&_=1445504697861&isPagination=false&sqlId=COMMON_SSE_ZQPZ_GP_GPLB_BGSSR_C&productid=600004
+
+http://query.sse.com.cn/commonQuery.do?jsonCallBack=jsonp1445504697726&_=1445504697862&isPagination=false&sqlId=COMMON_SSE_ZQPZ_GP_GPLB_MSXX_C&productid=600004*/
 	public static String convert(String utfString){
 		StringBuilder sb = new StringBuilder();
 		int i = -1;
@@ -125,13 +133,9 @@ public class Main {
 //		System.out.println("Name: " + jsonResult);
 //		UpdateSHStock updateSHStock = new UpdateSHStock();
 //		updateSHStock.update();
-		//jsonCallBack=jsonp1445003840821&_=1445003840848&isPagination=false&
-		String host = "query.sse.com.cn";
-		String url = "/commonQuery.do?sqlId=COMMON_SSE_ZQPZ_GP_GPLB_C&productid=600000";
-		String method = "GET";
-		HttpRequest request = new DefaultHttpRequest(method,host, url);
-		request.setHeader(HttpRequest.REQUEST_HEADER_HOST, "query.sse.com.cn");
-		request.setHeader(HttpRequest.REQUEST_HEADER_REFERER, "http://www.sse.com.cn/assortment/stock/list/stockdetails/company/index.shtml?COMPANY_CODE=600000");
+	
+		SSEUrl url = new SSEUrl();
+		HttpRequest request = url.getCompanyHttpRequest(600004);
 		HttpResponse response = null;
 		HttpClient client = new HttpClient(request);
 		
@@ -146,10 +150,17 @@ public class Main {
 				e.printStackTrace();
 			}
 		}
+		JSONArray companyInfo = null;
 		if(jsonObject != null){
-			JSONArray companyInfo = jsonObject.getJSONArray("result");
+			companyInfo = jsonObject.getJSONArray("result");
 			Log.d("Json result: "+companyInfo);
 		}
+		
+//		if(companyInfo != null){
+//			JSONObject object = companyInfo.getJSONObject(0);
+//			String stockA = object.getString("");
+//		}
+		
 		
 	}
 }
